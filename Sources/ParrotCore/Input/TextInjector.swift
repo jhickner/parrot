@@ -39,6 +39,9 @@ final class TextInjector {
 
     /// Virtual keycode for V on ANSI layouts (kVK_ANSI_V).
     private static let keycodeV: CGKeyCode = 9
+    private static let keycodeReturn: CGKeyCode = 36
+    /// Lets the target app finish handling the paste before Return arrives.
+    static let submitDelay: TimeInterval = 0.05
 
     /// `CGEventKeyboardSetUnicodeString` takes about 20 UTF-16 units per event.
     private static let chunkSize = 20
@@ -68,6 +71,21 @@ final class TextInjector {
     func copyToClipboard(_ text: String) {
         guard !text.isEmpty else { return }
         clipboard.copy(text)
+    }
+
+    /// Presses Return after `submitDelay`.
+    func submit() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.submitDelay) {
+            let source = CGEventSource(stateID: .privateState)
+            guard
+                let down = CGEvent(keyboardEventSource: source, virtualKey: Self.keycodeReturn, keyDown: true),
+                let up = CGEvent(keyboardEventSource: source, virtualKey: Self.keycodeReturn, keyDown: false)
+            else { return }
+            down.flags = []
+            up.flags = []
+            down.post(tap: Self.postLocation)
+            up.post(tap: Self.postLocation)
+        }
     }
 
     private static func postCommandV() {

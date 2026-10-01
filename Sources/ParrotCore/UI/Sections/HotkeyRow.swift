@@ -4,7 +4,7 @@ import SwiftUI
 struct HotkeyRow: View {
     @ObservedObject var store: SettingsStore
 
-    var body: some View {
+    @ViewBuilder var body: some View {
         PillRow("Hotkey") {
             PillMenu(title: store.current.hotkey.key.displayName) {
                 ForEach(HotkeyKey.allCases, id: \.self) { key in
@@ -14,6 +14,14 @@ struct HotkeyRow: View {
                     ))
                 }
             }
+        }
+        PillRow("Submit on release") {
+            Toggle("Submit on release", isOn: Binding(
+                get: { store.current.hotkey.submitOnRelease },
+                set: { on in store.update { $0.hotkey.submitOnRelease = on } }
+            ))
+            .toggleStyle(.switch)
+            .labelsHidden()
         }
     }
 }

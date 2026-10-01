@@ -8,6 +8,8 @@ import CoreGraphics
 struct HotkeySettings: Codable, Equatable {
     /// The modifier held to dictate. An unknown name decodes to the default.
     var key: HotkeyKey = .fn
+    /// Press Return after the transcript is inserted.
+    var submitOnRelease = false
 
     init() {}
 
@@ -15,6 +17,7 @@ struct HotkeySettings: Codable, Equatable {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         let name = try c.decodeIfPresent(String.self, forKey: .key)
         key = name.flatMap(HotkeyKey.init(rawValue:)) ?? .fn
+        submitOnRelease = try c.decodeIfPresent(Bool.self, forKey: .submitOnRelease) ?? false
     }
 }
 

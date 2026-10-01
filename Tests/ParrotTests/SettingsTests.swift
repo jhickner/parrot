@@ -35,6 +35,7 @@ final class SettingsFieldTests: XCTestCase {
 
     func testUnknownHotkeyFallsBackToFn() throws {
         XCTAssertEqual(try decode(#"{"hotkey": {"key": "caps-lock"}}"#).hotkey.key, .fn)
+        XCTAssertTrue(try decode(#"{"hotkey": {"submitOnRelease": true}}"#).hotkey.submitOnRelease)
     }
 
     func testModelAndLanguageDefaultToNil() throws {

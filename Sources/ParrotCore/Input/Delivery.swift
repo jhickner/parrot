@@ -42,9 +42,11 @@ enum DeliveryDecision: Equatable {
 @MainActor
 final class TextDelivery {
     private let injector: TextInjector
+    private let submit: @MainActor () -> Bool
 
-    init(mode: InjectMode) {
+    init(mode: InjectMode, submit: @escaping @MainActor () -> Bool = { false }) {
         self.injector = TextInjector(mode: mode)
+        self.submit = submit
     }
 
     /// Throws `DeliveryError` when the transcript did not reach the cursor.
@@ -58,6 +60,7 @@ final class TextDelivery {
             // The kind of character only: the log never carries text.
             Log.info("  before cursor: \(before.kind)\(spaced.first == " " && text.first != " " ? " · leading space" : "")")
             injector.inject(spaced)
+            if submit() { injector.submit() }
         case .discardSecure:
             let when = focusAtStart?.isSecure == true ? "recording start" : "delivery"
             Log.info("  secure field focused at \(when); transcript discarded")

@@ -150,7 +150,7 @@ public enum Daemon {
             processors: [DictionaryProcessor(store: dictionary)],
             observers: observers,
             dumpWav: options.dumpWav,
-            delivery: TextDelivery(mode: options.injectMode),
+            delivery: TextDelivery(mode: options.injectMode, submit: { settings.current.hotkey.submitOnRelease }),
             context: dictionaryContext
         )
         switcher.controller = controller
